@@ -1,0 +1,49 @@
+##############################
+# Windows ignores
+##############################
+# Windows image file caches
+Thumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+##############################
+# Linux ignores
+##############################
+.*
+!.gitignore
+*~
+
+# KDE
+.directory
+
+##############################
+# OSX ignores  
+##############################
+.DS_Store
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+##############################
+# Java ignores
+##############################
+*.class
+
+##############################
+# Netbeans ignores     
+##############################
+nbproject/private/
+build/ 
+nbbuild/
+dist/
+nbdist/
+nbactions.xml
+nb-configuration.xml
