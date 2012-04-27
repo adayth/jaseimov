@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jnlp codebase="http://192.168.1.8" href="launch.jnlp" spec="1.0+">
+    <information>
+        <title>client</title>
+        <vendor>Aday Talavera Hierro</vendor>
+        <homepage href="http://cicei.ulpgc.es/aseimov"/>
+        <description>JASEIMOV client application</description>
+        <description kind="short">client</description>
+    </information>
+<security>
+<all-permissions/>
+</security>
+    <resources>
+<j2se version="1.5+"/>
+<jar eager="true" href="client.jar" main="true"/>
+    <jar href="lib/comm-lib.jar"/>
+<jar href="lib/jgraph.jar"/>
+<jar href="lib/jchart2d-3.1.0.jar"/>
+<jar href="lib/AbsoluteLayout.jar"/>
+</resources>
+    <application-desc main-class="client.ClientApp">
+    <argument>192.168.1.8</argument>
+    </application-desc>
+</jnlp>

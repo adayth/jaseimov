@@ -1,0 +1,287 @@
+/*
+ * Copyright (C) 2010 Aday Talavera Hierro <aday.talavera@gmail.com>
+ *
+ * This file is part of JASEIMOV.
+ *
+ * JASEIMOV is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * JASEIMOV is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with JASEIMOV.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package server;
+
+import device.*;
+import java.io.IOException;
+import server.devicetest.*;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Main class of JASEIMOV Server.
+ * @author Aday Talavera Hierro <aday.talavera@gmail.com>
+ */
+public final class ServerApp
+{
+    /**
+     * RMI port to be used in the RMI registry.
+     */
+    public static int rmiPort = java.rmi.registry.Registry.REGISTRY_PORT;
+
+    private ServiceList list;
+    private Registry rmiRegistry;
+
+    /**
+     * Creates a new Server.
+     */
+    public ServerApp()
+    {
+        list = new ServiceList(rmiPort);        
+    }
+
+    /**
+     * Configure the server with a configuration file.
+     * @param configFile Configuration file.
+     */
+    public void configure(String configFile)
+    {
+        System.out.println("Reading configuration from " + configFile);
+
+        try
+        {
+            AbstractDevice[] deviceList = Configurer.readConfigFile(configFile);
+            for(AbstractDevice device : deviceList)
+            {
+                list.addService( new ServiceRMIDevice(device, rmiPort));
+            }
+        }
+        catch(IOException ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     * Configure the server with a predefined list of virtual devices of server.devicetest package.
+     * This is for debugging JASEIMOV client.
+     */
+    public void configureTest()
+    {
+        System.out.println("Configuring test devices");
+        // Initialize a list of fake devices for testing
+        List<AbstractDevice> testList = new ArrayList<AbstractDevice>();
+        // Fake devices
+        AbstractDevice device;
+        testList.add(new MotorControlTest());
+        testList.add(new ServoControlTest());
+
+        AccelerometerTest accel = new AccelerometerTest();
+        accel.setDevicePosition(DevicePosition.CENTER);
+        testList.add(accel);
+        testList.add(accel.getAxisDevice(Accelerometer.Axis.X_AXIS));
+        testList.add(accel.getAxisDevice(Accelerometer.Axis.Y_AXIS));
+        testList.add(accel.getAxisDevice(Accelerometer.Axis.Z_AXIS));
+
+        device = new MouseEncoderTest();
+        device.setDevicePosition(DevicePosition.BACK_RIGHT_WHEEL);
+        testList.add(device);
+        device = new MouseEncoderTest();
+        device.setDevicePosition(DevicePosition.BACK_LEFT_WHEEL);
+        testList.add(device);
+        device = new MouseEncoderTest();
+        device.setDevicePosition(DevicePosition.FRONT_RIGHT_WHEEL);
+        testList.add(device);
+        device = new MouseEncoderTest();
+        device.setDevicePosition(DevicePosition.FRONT_LEFT_WHEEL);
+        testList.add(device);
+
+        device = new SonarTest();
+        device.setDevicePosition(DevicePosition.FRONT_LEFT_CORNER);
+        testList.add(device);
+        device = new SonarTest();
+        device.setDevicePosition(DevicePosition.FRONT_RIGHT_CORNER);
+        testList.add(device);
+        device = new SonarTest();
+        device.setDevicePosition(DevicePosition.FRONT_CENTER_TOP);
+        testList.add(device);        
+        device = new IRTest();
+        device.setDevicePosition(DevicePosition.FRONT_CENTER_BOTTOM);
+        testList.add(device);
+        device = new IRTest();
+        device.setDevicePosition(DevicePosition.FRONT_LEFT);
+        testList.add(device);
+        device = new IRTest();
+        device.setDevicePosition(DevicePosition.FRONT_RIGHT);
+        testList.add(device);
+
+        device = new IRTest();
+        device.setDevicePosition(DevicePosition.LEFT_FRONT);
+        testList.add(device);
+        device = new SonarTest();
+        device.setDevicePosition(DevicePosition.LEFT_CENTER);
+        testList.add(device);
+        device = new IRTest();
+        device.setDevicePosition(DevicePosition.LEFT_BACK);
+        testList.add(device);
+
+        device = new IRTest();
+        device.setDevicePosition(DevicePosition.RIGHT_FRONT);
+        testList.add(device);
+        device = new SonarTest();
+        device.setDevicePosition(DevicePosition.RIGHT_CENTER);
+        testList.add(device);
+        device = new IRTest();
+        device.setDevicePosition(DevicePosition.RIGHT_BACK);
+        testList.add(device);
+
+        device = new SonarTest();
+        device.setDevicePosition(DevicePosition.BACK_LEFT_CORNER);
+        testList.add(device);
+        device = new SonarTest();
+        device.setDevicePosition(DevicePosition.BACK_RIGHT_CORNER);
+        testList.add(device);
+        device = new IRTest();
+        device.setDevicePosition(DevicePosition.BACK_LEFT);
+        testList.add(device);
+        device = new IRTest();
+        device.setDevicePosition(DevicePosition.BACK_CENTER);
+        testList.add(device);
+        device = new IRTest();
+        device.setDevicePosition(DevicePosition.BACK_RIGHT);
+        testList.add(device);
+
+        device = new CameraTest();
+        device.setDevicePosition(DevicePosition.FRONT_LEFT_CAMERA);
+        testList.add(device);
+
+        device = new CameraTest();
+        device.setDevicePosition(DevicePosition.FRONT_RIGHT_CAMERA);
+        testList.add(device);
+
+        device = new CameraTest();
+        device.setDevicePosition(DevicePosition.BACK_LEFT_CAMERA);
+        testList.add(device);
+
+        device = new CameraTest();
+        device.setDevicePosition(DevicePosition.BACK_RIGHT_CAMERA);
+        testList.add(device);        
+
+        // Add to service list
+        for(AbstractDevice dev : testList)
+        {            
+            list.addService( new ServiceRMIDevice(dev, rmiPort) );
+        }
+
+    }
+
+    /**
+     * Starts the server creating the RMI registry and all configured services.
+     */
+    public void startServer()
+    {
+        System.out.println("Starting server");
+        try
+        {            
+            rmiRegistry = LocateRegistry.createRegistry(rmiPort);
+            list.startServices();
+            list.bindList();
+        }
+        catch(Exception ex)
+        {
+            System.err.println("Error starting server");
+            ex.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * Stops the server deleting the RMI registry.
+     */
+    public void stopServer()
+    {
+        System.out.println("Stopping server");
+        try
+        {
+            list.stopServices();
+            list.unbindList();
+            UnicastRemoteObject.unexportObject(rmiRegistry, true);
+        }
+        catch(Exception ex)
+        {
+            System.err.println("Error stopping server");
+            ex.printStackTrace();
+            System.exit(1);
+        }
+    }    
+
+    /**
+     * Start server application.
+     * @param args One of two: "-test"  or "-configure $configuration_file".
+
+     */
+    public static void main(String[] args)
+    {
+        System.out.println("JASEIMOV Server");
+        ServerApp server = new ServerApp();
+
+        if(args.length>0 && args[0].equals("-test"))
+        {
+            server.configureTest();
+        }
+        else if(args.length>1 && args[0].equals("-configure"))
+        {
+            server.configure(args[1]);
+        }
+        else
+        {
+            System.out.println("Not enough parameters. Valid options:\n\t-test\n\t-configure $configuration_file");
+            System.exit(1);
+        }
+
+        server.startServer();
+
+        try
+        {
+            System.out.println("List of devices avalaible:");
+            System.out.println("-------------------------------------------------------------------------------------------");
+            System.out.format("|%30s |%6s |%22s |%24s |%n", "Name", "ID", "Device type", "Device position");            
+            System.out.println("-------------------------------------------------------------------------------------------");
+            ServiceDevice services[] = server.list.getServices();            
+            if(services.length > 0)
+            {
+                for(ServiceDevice service : services)
+                {
+                    Device device = service.getDevice();                    
+                    System.out.format("|%30s |%6s |%22s |%24s |%n", device.getName(), device.getID(), device.getDeviceType(), device.getDevicePosition());                    
+                }
+                System.out.println("-------------------------------------------------------------------------------------------");
+            }
+            else
+            {
+                System.out.println("Empty service list");
+            }
+
+            java.io.BufferedReader br = new java.io.BufferedReader(new java.io.InputStreamReader(System.in));
+            System.out.println("\nEnter character, 'q' to quit");
+            char c;
+            while( (c = (char)br.read()) != 'q') continue;
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }        
+
+        server.stopServer();
+        System.exit(0);
+    }
+}

@@ -37,13 +37,6 @@ $RECYCLE.BIN/
 ##############################
 *.class
 
-##############################
-# Netbeans ignores     
-##############################
-nbproject/private/
-build/ 
-nbbuild/
-dist/
-nbdist/
-nbactions.xml
-nb-configuration.xml
+/tests/nbproject/private/
+/tests/dist/
+/tests/build/
