@@ -82,6 +82,10 @@ public class SpatialTest extends AbstractDevice implements Spatial
   {    
   }
 
+  public void calibrateCompass(double[] values) throws RemoteException, DeviceException
+  {
+  }
+
   /////////////////////////////////////////////////
   /////////////////////////////////////////////////
   /**

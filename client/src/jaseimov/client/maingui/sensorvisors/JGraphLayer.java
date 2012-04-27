@@ -425,7 +425,8 @@ public class JGraphLayer
             case IR_SENSOR:
                 icon = new ImageIcon(getClass().getResource("/jaseimov/client/images/ir.png"));
                 break;
-            case ENCODER_SENSOR:
+            case MOUSE_ENCODER_SENSOR:
+            case PHIDGET_ENCODER_SENSOR:
                 icon = new ImageIcon(getClass().getResource("/jaseimov/client/images/encoder.png"));
                 break;
             case CAMERA_SENSOR:

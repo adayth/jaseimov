@@ -109,8 +109,7 @@ public final class ServerApp
     testList.add(spatial);
     testList.add(spatial.getAccelAxisDevice(Axis.X_AXIS));
     testList.add(spatial.getAccelAxisDevice(Axis.Y_AXIS));
-    testList.add(spatial.getAccelAxisDevice(Axis.Z_AXIS));
-    motorTest.configAutoControl((Accelerometer)spatial);
+    testList.add(spatial.getAccelAxisDevice(Axis.Z_AXIS));    
 
     testList.add(spatial.getCompassAxisDevice(Axis.X_AXIS));
     testList.add(spatial.getCompassAxisDevice(Axis.Y_AXIS));

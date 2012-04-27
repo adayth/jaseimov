@@ -57,8 +57,7 @@ public class AdvancedServoControlDev extends AbstractDevice implements AdvancedS
       servo.waitForAttachment(DeviceConstants.PHIDGET_WAIT);
       servo.setServoType(index, servoType);
       servo.setEngaged(index, true);
-      servo.setPosition(index, startPosition);
-      // TODO: Init new AdvancedServoPhidget parameters
+      servo.setPosition(index, startPosition);      
     }
     catch (PhidgetException ex)
     {
@@ -70,7 +69,7 @@ public class AdvancedServoControlDev extends AbstractDevice implements AdvancedS
   {
     try
     {
-      return servo.getPosition(index);
+      return servo.getPosition(index) - startPosition;
     }
     catch (PhidgetException ex)
     {
@@ -80,9 +79,15 @@ public class AdvancedServoControlDev extends AbstractDevice implements AdvancedS
 
   public void setPosition(double p) throws RemoteException, DeviceException
   {
+    // Checks current servo ranges
+    if(p < getMinPosition() || p > getMaxPosition())
+    {
+      throw new DeviceException("Out of range[" + getMinPosition() + ", " + getMaxPosition() + "]");
+    }
+
     try
     {
-      servo.setPosition(index, p);
+      servo.setPosition(index, p + startPosition);
     }
     catch (PhidgetException ex)
     {
@@ -116,17 +121,17 @@ public class AdvancedServoControlDev extends AbstractDevice implements AdvancedS
 
   public double getMinPosition() throws RemoteException, DeviceException
   {
-    return minPosition;
+    return minPosition - startPosition;
   }
 
   public double getMaxPosition() throws RemoteException, DeviceException
   {
-    return maxPosition;
+    return maxPosition - startPosition;
   }
 
   public double getStartPosition() throws RemoteException, DeviceException
   {
-    return startPosition;
+    return 0;
   }
 
   public void resetPosition() throws RemoteException, DeviceException

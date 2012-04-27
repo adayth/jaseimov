@@ -78,7 +78,7 @@ public class ServoControlDevice extends AbstractDevice implements ServoControl
   {
     try
     {
-      return servo.getPosition(index);
+      return servo.getPosition(index) - startPosition;
     }
     catch (PhidgetException ex)
     {
@@ -88,9 +88,15 @@ public class ServoControlDevice extends AbstractDevice implements ServoControl
 
   public void setPosition(double p) throws RemoteException, DeviceException
   {
+    // Checks current servo ranges
+    if(p < getMinPosition() || p > getMaxPosition())
+    {
+      throw new DeviceException("Out of range[" + getMinPosition() + ", " + getMaxPosition() + "]");
+    }
+
     try
     {
-      servo.setPosition(index, p);
+      servo.setPosition(index, p + startPosition);
     }
     catch (PhidgetException ex)
     {
@@ -124,17 +130,17 @@ public class ServoControlDevice extends AbstractDevice implements ServoControl
 
   public double getMinPosition() throws RemoteException, DeviceException
   {
-    return minPosition;
+    return minPosition - startPosition;
   }
 
   public double getMaxPosition() throws RemoteException, DeviceException
   {
-    return maxPosition;
+    return maxPosition - startPosition;
   }
 
   public double getStartPosition() throws RemoteException, DeviceException
   {
-    return startPosition;
+    return 0;
   }
 
   public void resetPosition() throws RemoteException, DeviceException

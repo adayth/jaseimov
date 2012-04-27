@@ -33,7 +33,7 @@ public interface Encoder extends SensorDevice
    * @return Number of tics.
    * @throws RemoteException
    */
-  int getTics() throws RemoteException;
+  int getTics() throws RemoteException, DeviceException;
 
   /**
    * Returns a coeficient that can be multiplied by a number of tics to
@@ -41,5 +41,16 @@ public interface Encoder extends SensorDevice
    * @return Tic/cm constant for this encoder.
    * @throws RemoteException
    */
-  double getCmPerTic() throws RemoteException;
+  double getCmPerTic() throws RemoteException, DeviceException;
+
+  /**
+   * Returns a coeficient that can be multiplied by a number of tics to
+   * calculate the radians of a wheel with that encoder.
+   * @return Tic/radians constant for this encoder.
+   * @throws RemoteException
+   */
+  double getRadPerTic() throws RemoteException, DeviceException;
+
+
+
 }

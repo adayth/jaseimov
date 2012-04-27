@@ -23,8 +23,10 @@ import jaseimov.lib.remote.connect.ConnectException;
 import jaseimov.lib.remote.list.RemoteDeviceInfo;
 import jaseimov.client.utils.Command;
 import jaseimov.lib.devices.Accelerometer;
+import jaseimov.lib.devices.Encoder;
 import jaseimov.lib.devices.MotorControl;
 import jaseimov.lib.devices.ServoControl;
+import jaseimov.lib.devices.Spatial;
 
 /**
  * Command that creates and shows a {@link CarControlCenter}.
@@ -44,21 +46,24 @@ public class ControlCarCommand extends Command
   {
     RemoteDeviceInfo[] motors;
     RemoteDeviceInfo[] servos;
-    RemoteDeviceInfo[] accelerometers;
+    RemoteDeviceInfo[] spatials;
+    RemoteDeviceInfo[] encoders;
     try
     {
       motors = ClientApp.getDeviceList().getRemoteDeviceInfoArray(MotorControl.class);
       servos = ClientApp.getDeviceList().getRemoteDeviceInfoArray(ServoControl.class);
-      accelerometers = ClientApp.getDeviceList().getRemoteDeviceInfoArray(Accelerometer.class);
+      spatials = ClientApp.getDeviceList().getRemoteDeviceInfoArray(Spatial.class);
+      encoders = ClientApp.getDeviceList().getRemoteDeviceInfoArray(Encoder.class);
 
-      if (motors.length > 0 && servos.length > 0 && accelerometers.length > 0)
+      if (motors.length > 0 && servos.length > 0 && spatials.length > 0)
       {
         if (control == null || !control.isVisible())
         {
           control = new CarControlCenter(
                   (MotorControl) motors[0].getDevice(),
                   (ServoControl) servos[0].getDevice(),
-                  (Accelerometer) accelerometers[0].getDevice());
+                  (Spatial) spatials[0].getDevice(),
+                  (Encoder) encoders[0].getDevice());
         }
         ClientApp.registerFrame(control);
         control.setTitle("car control");

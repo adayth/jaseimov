@@ -19,6 +19,7 @@
 package jaseimov.server.device;
 
 import jaseimov.lib.devices.AbstractDevice;
+import jaseimov.lib.devices.Device;
 import jaseimov.lib.devices.DeviceException;
 import jaseimov.lib.devices.DeviceType;
 import jaseimov.lib.devices.InterfaceKit;
@@ -43,11 +44,11 @@ public class SonarDevice extends AbstractDevice implements Sonar
    * @param outputPort Digital output of the InterfaceKit where sonar can be turned on/off.
    * @throws DeviceException If the InterfaceKit has an error.
    */
-  public SonarDevice(String name, InterfaceKit ikit, int sensorPort, int outputPort) throws DeviceException
+  public SonarDevice(String name, Device ikit, int sensorPort, int outputPort) throws DeviceException
   {
     super(name, DeviceType.SONAR_SENSOR);
 
-    this.ikit = ikit;
+    this.ikit = (InterfaceKit) ikit;
     this.sensorPort = sensorPort;
     this.outputPort = outputPort;
 

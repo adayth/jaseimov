@@ -48,7 +48,8 @@ public class VisorFactory
         case SPATIAL_SENSOR:
           visor = new SpatialVisor(deviceInfo);
           break;
-        case ENCODER_SENSOR:
+        case MOUSE_ENCODER_SENSOR:
+        case PHIDGET_ENCODER_SENSOR:
           visor = new EncoderVisor(deviceInfo);
           break;
         case SONAR_SENSOR:

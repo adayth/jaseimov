@@ -32,7 +32,7 @@ public class MouseEncoderTest extends AbstractDevice implements Encoder
 {
   public MouseEncoderTest()
   {
-    super("test-encoder", DeviceType.ENCODER_SENSOR);
+    super("test-encoder", DeviceType.MOUSE_ENCODER_SENSOR);
   }
 
   @Override
@@ -48,6 +48,13 @@ public class MouseEncoderTest extends AbstractDevice implements Encoder
   public double getCmPerTic() throws RemoteException
   {
     return 0.01983130362578557;
+  }
+
+
+
+  public double getRadPerTic() throws RemoteException, DeviceException
+  {
+    return Math.PI;
   }
 
   public Object update() throws RemoteException, DeviceException

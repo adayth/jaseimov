@@ -21,7 +21,7 @@ public final class ExponentialFilter implements Filter
   {
     //alfa: noise level from 0 to 1
     a0 = a;
-    valExp0 = alfa * a0 + (1 - alfa) * valExp0;
+    valExp0 = alfa * val + (1 - alfa) * valExp0;
     a = val;
     return valExp0;
   }

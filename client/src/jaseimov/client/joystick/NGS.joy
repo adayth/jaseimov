@@ -1,0 +1,27 @@
+# Instrucciones
+
+# D: position= center
+# R3: position= center
+# A: Max speed
+# L2: Decrease speed 'valinc' units
+# DOWN: decrease speed 'valinc' units
+# R2: Increase speed 'valinc' units
+# UP: Increase speed 'valinc' units
+# L1: Decrease position 'valinc' units
+# LEFT: Decrease position 'valinc' units
+# R1: Increase position 'valinc' units
+# RIGHT: Increase position 'valinc' units
+
+valinc=5
+L1=6
+L2=8
+#L3=10
+R1=7
+R2=9
+#R3=11
+A=0
+B=1
+C=2
+D=3
+#START=9
+#SELECT=8

@@ -1,5 +1,6 @@
 package jaseimov.client.joystick;
 
+import jaseimov.client.controlcarB.adaptative.Sequencer;
 import jaseimov.client.utils.FileFunctions;
 import java.io.File;
 import java.io.InputStream;
@@ -19,6 +20,7 @@ public class JoystickControl
   private boolean frozen = false;
   private boolean videogame_mode = false;
   public File jstkFile = null;
+  private Sequencer seq;
   // Filefunctions
   FileFunctions fl = new FileFunctions();
   //Sliders (this two sliders are going to be the ones in controlcarframe by initializing them)
@@ -29,6 +31,7 @@ public class JoystickControl
   //information label control
   JLabel infolabel = null;
   private int maxs = 100; //max speed
+  private int centers=0; //null speed
   private int mins = -100; //min speed
   private int maxp = 140; //max position
   private int centerp = 0; //central position
@@ -69,7 +72,12 @@ public class JoystickControl
   int SELECT;
   int ButtonCount = 0;
 
-  public JoystickControl(JSlider Speed, JSlider Position, JSlider Acceleration)
+  //seq previous parameters for emergency stop
+  boolean energencyeverpressed=false;
+  boolean prevfilter;
+  boolean prevautomatic;
+
+  public JoystickControl(JSlider Speed, JSlider Position, Sequencer val)
   { //constructor
     System.out.println("[JoystickControl]:New JoystickControl Module loaded");
 
@@ -82,21 +90,29 @@ public class JoystickControl
 
     System.out.println("[JoystickControl]:Number of buttons found:" + ButtonCount);
 
+    SetSliders(Speed, Position);
+
     speedSlider = Speed;
     maxs = Speed.getMaximum();
     mins = Speed.getMinimum();
+    centers=(maxs+mins)/2;
     posSlider = Position;
     maxp = Position.getMaximum();
     minp = Position.getMinimum();
     centerp = (maxp + minp) / 2;
-    accSlider = Acceleration;
-    maxa = Acceleration.getMaximum();
-    mina = Acceleration.getMinimum();
     SlidersAsigned = true;
+
+    seq=val;
 
     if (ButtonCount == 12)
     {
-      ApplyPS2SetUp(); //PS2 type setup
+      ApplyOwnSetUp("PS2.joy"); //PS2 type setup
+      System.out.println("[JoystickControl]: PS2 setup");
+    }
+    if (ButtonCount == 10)
+    {
+      ApplyOwnSetUp("NGS.joy"); //PS2 type setup
+      System.out.println("[JoystickControl]: NGS setup");
     }
   }
   // constructor
@@ -117,32 +133,14 @@ public class JoystickControl
         // get button values
         boolean[] buttons = gpController.getButtons();
         AsignButtons(buttons);
-        showInfo(buttons);
-
-        // get POV hat compass direction
-        //compassDir = gpController.getHatDir();
-        //System.out.println("[Joystick]hat:"+compassDir);
-        //setSliders(compassDir);
+        //showInfo(buttons);    
 
         // get compass direction for the two analog sticks
-        //compassDir = gpController.getXYStickDir(); //left stick
+        compassDir = gpController.getXYStickDir(); //left stick
 
         //get the stick values
-        //if(stickdir != NONE){
         stickdir = gpController.getZRZStickDir(); //right stick
-        //System.out.println("stick dir: "+stickdir);
-        //R3 will act as shift
-        if (buttons[R3] == false)
-        {
-          AsignMovement(stickdir);
-        }
-        else
-        {//if R3 is pushed
-          AsignMovementMax(stickdir);
-        }
-        //}else{
-        //System.out.println("no stick");
-        //}
+        
 
         //get the hat values
         if (hatdir != NONE)
@@ -186,13 +184,13 @@ public class JoystickControl
     }
   }
 
-  private void ApplyPS2SetUp()
+  private void ApplyOwnSetUp(String Filename)
   {
+    // open contained files in the package, ej Filename="PS2.joy"
     String line[];
     String id = null;
-    String init;
     int val = 0;
-    InputStream in = getClass().getResourceAsStream("PS2.joy");
+    InputStream in = getClass().getResourceAsStream(Filename);
     String[] content = fl.convertStreamToString(in);
     for (int i = 0; i < content.length; i++)
     {
@@ -370,7 +368,7 @@ public class JoystickControl
     }
   }
 
-  public void SetSliders(JSlider Speed, JSlider Position, JSlider Acceleration)
+  private void SetSliders(JSlider Speed, JSlider Position)
   {
     speedSlider = Speed;
     maxs = Speed.getMaximum();
@@ -379,9 +377,6 @@ public class JoystickControl
     maxp = Position.getMaximum();
     minp = Position.getMinimum();
     centerp = (maxp + minp) / 2;
-    accSlider = Acceleration;
-    maxa = Acceleration.getMaximum();
-    mina = Acceleration.getMinimum();
     SlidersAsigned = true;
   }
 
@@ -400,15 +395,26 @@ public class JoystickControl
     int speed = speedSlider.getValue();
     int pos = posSlider.getValue();
 
-    if (btn[D] == true || btn[R3] == true)
+    if (btn[A] == true || btn[R3] == true)
     {//square buton or  R3
+      // reset
       speedSlider.setValue(0);
-      posSlider.setValue(centerp);
+      posSlider.setValue(0);
     }
 
-    if (btn[A] == true)
-    { //triangle on (max speed)
+    if (btn[B] == true)
+    { //(min speed)
+      speedSlider.setValue(mins);
+    }
+
+    if (btn[C] == true)
+    { //(max speed)
       speedSlider.setValue(maxs);
+    }
+
+    if (btn[D] == true)
+    { //EMERGENCY
+      //seq.setEmergencyStopState(btn[D]);
     }
 
     //L2 decrease speed, speed--
@@ -429,7 +435,13 @@ public class JoystickControl
       }
     }
 
-    if (btn[L2] == false & btn[DOWN] == false & btn[R2] == false & btn[UP] == false)
+    // set zero on speed when not pressing any speed button
+    if (btn[L2] == false & 
+        btn[DOWN] == false &
+        btn[R2] == false &
+        btn[UP] == false &
+        btn[C]==false &
+        btn[B]==false)
     {
       if (videogame_mode == true)
       {
@@ -450,6 +462,18 @@ public class JoystickControl
       if (pos < maxp)
       {
         posSlider.setValue(pos + valinc);
+      }
+    }
+
+    // set zero on position when not pressing any speed button
+    if (btn[L1] == false &
+        btn[LEFT] == false &
+        btn[R1] == false &
+        btn[RIGHT] == false)
+    {
+      if (videogame_mode == true)
+      {
+        posSlider.setValue(0);
       }
     }
 

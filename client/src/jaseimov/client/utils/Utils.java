@@ -39,7 +39,8 @@ public class Utils
       case AXIS_SENSOR:
       case SPATIAL_SENSOR:
         return Color.decode("0x1b67ff");
-      case ENCODER_SENSOR:
+      case MOUSE_ENCODER_SENSOR:
+      case PHIDGET_ENCODER_SENSOR:
         return Color.decode("0xffb655");
       case INTERFACE_KIT:
         return Color.decode("0x86ff7b");

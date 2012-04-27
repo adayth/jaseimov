@@ -18,15 +18,16 @@
  */
 package jaseimov.server.devicetest;
 
+import com.phidgets.MotorControlPhidget;
 import jaseimov.lib.devices.AbstractDevice;
 import jaseimov.lib.devices.Accelerometer;
 import jaseimov.lib.devices.DeviceException;
 import jaseimov.lib.devices.DeviceType;
+import jaseimov.lib.devices.Encoder;
 import jaseimov.lib.devices.MotorControl;
 import jaseimov.server.autocontrol.AutomaticControl;
-import jaseimov.server.autocontrol.filters.EmptyFilter;
-import jaseimov.server.autocontrol.filters.Filter;
 import java.rmi.RemoteException;
+import java.util.logging.Filter;
 
 /**
  * Virtual MotorControl for debugging purposes.
@@ -40,10 +41,21 @@ public class MotorControlTest extends AbstractDevice implements MotorControl
   double aceleration = 0.1;
   double minAceleration = 0.1;
   double maxAceleration = 100.;
+  boolean useVelocityLimits = false;
+  double lowerLimit=11.0;
+  double upperLimit =70.0;
+
+  private AutomaticControl autoControl;
+  Encoder encoder;
+  Accelerometer accelerometer;
+  Filter filter;
+  private MotorControlPhidget motor;
+  double periodo=10;
 
   public MotorControlTest()
   {
     super("motor-test", DeviceType.MOTOR_CONTROL);
+    //autoControl = new AutomaticControl(motor, encoder, accelerometer, filter, periodo);
   }
 
   public void printStatus()
@@ -103,6 +115,26 @@ public class MotorControlTest extends AbstractDevice implements MotorControl
     setVelocity(0);
   }
 
+  public boolean isUsingVelocityLimits() throws RemoteException, DeviceException
+  {
+    return useVelocityLimits;
+  }
+
+  public void setUseVelocityLimits(boolean value) throws RemoteException, DeviceException
+  {
+    useVelocityLimits = value;
+  }
+
+  public double getLowerLimit() throws RemoteException, DeviceException
+  {
+    return lowerLimit;
+  }
+
+  public double getUpperLimit() throws RemoteException, DeviceException
+  {
+    return upperLimit;
+  }
+
   @Override
   public void closeDevice() throws DeviceException
   {
@@ -112,37 +144,72 @@ public class MotorControlTest extends AbstractDevice implements MotorControl
   // New Methods for Auto Velocity Control
   ///////////////////////////////
 
-  private AutomaticControl autoControl;
 
-  public void configAutoControl(Accelerometer accelerometer)
+
+  /*public void configAutoControl(Accelerometer accelerometer)
   {
     Filter filter = new EmptyFilter();
     autoControl = new AutomaticControl(this, accelerometer, filter, 2000);
+  }*/
+
+  private void checkAutoControlConfigured() throws DeviceException
+  {
+    if(autoControl == null)
+    {
+      throw new DeviceException("Automatic control not avalaible, configure it first");
+    }
   }
 
   public void setAutoControlled(boolean enabled) throws RemoteException, DeviceException
   {
+    checkAutoControlConfigured();
     autoControl.setEnabled(enabled);
   }
 
   public boolean isAutoControlled() throws RemoteException, DeviceException
   {
+    checkAutoControlConfigured();
     return autoControl.isEnabled();
   }
 
   public void setAutoControlVelocity(double v) throws RemoteException, DeviceException
   {
+    checkAutoControlConfigured();
     autoControl.setAutoControlVelocity(v);
+  }
+
+  public void  setDesiredOrder(double v){
+    autoControl.setDesiredOrder(v);
+  }
+
+  public boolean getEmergencyState(){
+    return autoControl.getEnergencyState();
   }
 
   public double getAutoControlVelocity() throws RemoteException, DeviceException
   {
+    checkAutoControlConfigured();
     return autoControl.getAutoControlVelocity();
   }
 
-  public double getAutoControlVelocityCalc() throws RemoteException, DeviceException
+  public double getAutoControlRawVelocity() throws RemoteException, DeviceException
   {
-    return autoControl.getVelocityFromAccel();
+    checkAutoControlConfigured();
+    return autoControl.getVelocityRaw();
+  }
+
+  public double getAutoControlFilteredVelocity() throws RemoteException, DeviceException
+  {
+    checkAutoControlConfigured();
+    return autoControl.getVelocityFiltered();
+  }
+
+  public void setHitAccelerationMaximum(double val){
+    autoControl.setHitAccelerationMaximum(val);
+  }
+
+  public double getHitAccelerationMaximum(){
+    return autoControl.getHitAccelerationMaximum();
   }
 
 }

@@ -39,6 +39,7 @@ public class ServoControlTest extends AbstractDevice implements ServoControl
   public ServoControlTest()
   {
     super("servo-test", DeviceType.SERVO_CONTROL);
+    engaged = true;
   }
 
   public void printStatus()
@@ -49,13 +50,12 @@ public class ServoControlTest extends AbstractDevice implements ServoControl
 
   public double getPosition() throws RemoteException, DeviceException
   {
-    return position;
+    return position - startPosition;
   }
 
   public void setPosition(double p) throws RemoteException, DeviceException
-  {
-    engaged = true;
-    position = p;
+  {    
+    position = p + startPosition;
   }
 
   public boolean getEngaged() throws RemoteException, DeviceException
@@ -70,17 +70,17 @@ public class ServoControlTest extends AbstractDevice implements ServoControl
 
   public double getMinPosition() throws RemoteException, DeviceException
   {
-    return minPosition;
+    return minPosition - startPosition;
   }
 
   public double getMaxPosition() throws RemoteException, DeviceException
   {
-    return maxPosition;
+    return maxPosition - startPosition;
   }
 
   public double getStartPosition() throws RemoteException, DeviceException
   {
-    return startPosition;
+    return 0;
   }
 
   public void resetPosition() throws RemoteException, DeviceException

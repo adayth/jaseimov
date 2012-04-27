@@ -32,5 +32,11 @@ public interface Compass extends SensorDevice
    * @throws RemoteException
    * @throws DeviceException
    */
-  double[] getMagneticField() throws RemoteException, DeviceException;  
+  double[] getMagneticField() throws RemoteException, DeviceException;
+
+  /**
+   * Calibrates compass with an array of values
+   * @param values 13 calibration double values
+   */
+  void calibrateCompass(double values[]) throws RemoteException, DeviceException;
 }

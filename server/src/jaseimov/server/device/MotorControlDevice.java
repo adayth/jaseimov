@@ -25,9 +25,11 @@ import com.phidgets.MotorControlPhidget;
 import com.phidgets.PhidgetException;
 import jaseimov.lib.devices.AbstractDevice;
 import jaseimov.lib.devices.Accelerometer;
+import jaseimov.lib.devices.Device;
 import jaseimov.lib.devices.DeviceException;
+import jaseimov.lib.devices.Encoder;
 import jaseimov.server.autocontrol.AutomaticControl;
-import jaseimov.server.autocontrol.filters.EmptyFilter;
+import jaseimov.server.autocontrol.filters.ExponentialFilter;
 import jaseimov.server.autocontrol.filters.Filter;
 
 /**
@@ -46,14 +48,7 @@ public class MotorControlDevice extends AbstractDevice implements MotorControl
   private double lowerLimit;
   private double upperLimit;
   private double limitDiff;
-
-  /**
-   * Creates a new MotorControlDevice.
-   * @param name Name of the device.
-   * @param serial Phidgets serial number of the PHidgets Motor Controller.
-   * @param motorIndex Input of the controller where the motor is connected.
-   * @throws DeviceException If the device is not found.
-   */
+  private boolean useVelocityLimits = false;
 
   /**
    * Creates a new MotorControlDevice.
@@ -66,6 +61,21 @@ public class MotorControlDevice extends AbstractDevice implements MotorControl
    */
   public MotorControlDevice(String name, int serial, int motorIndex, int lowerLimit, int upperLimit) throws DeviceException
   {
+    this(name, serial, motorIndex, lowerLimit, upperLimit, null, null);
+  }
+
+
+  /**
+   * Creates a new MotorControlDevice.
+   * @param name Name of the device.
+   * @param serial Phidgets serial number of the PHidgets Motor Controller.
+   * @param motorIndex Input of the controller where the motor is connected.
+   * @param lowerLimit Minimum percent (0-100) needed by the controller to move the motor.
+   * @param upperLimit Maximum percent (0-100) that can be used by the controller without exceeding electrical motor limits.
+   * @throws DeviceException If the device is not found.
+   */
+  public MotorControlDevice(String name, int serial, int motorIndex, int lowerLimit, int upperLimit, Device encoder, Device accelerometer) throws DeviceException
+  {
     super(name, DeviceType.MOTOR_CONTROL);
     phidgetSerial = serial;
     index = motorIndex;
@@ -74,7 +84,7 @@ public class MotorControlDevice extends AbstractDevice implements MotorControl
     // But velocity must ve adjusted to motor limits: lower to upper
     this.lowerLimit = lowerLimit;
     this.upperLimit = upperLimit;
-    limitDiff = (this.upperLimit-lowerLimit) / 100.;
+    limitDiff = (this.upperLimit - lowerLimit) / 100.;
 
     // Connect to phidget device
     try
@@ -85,11 +95,17 @@ public class MotorControlDevice extends AbstractDevice implements MotorControl
       minAceleration = motor.getAccelerationMin(index);
       maxAceleration = motor.getAccelerationMax(index);
       motor.setVelocity(index, 0);
-      motor.setAcceleration(index, minAceleration);
+      motor.setAcceleration(index, maxAceleration);
     }
     catch (PhidgetException ex)
     {
       throw new DeviceException(ex.getDescription());
+    }
+
+    // Initialize automatic control if an encoder & an accelerometer has been defined
+    if(encoder != null && accelerometer != null)
+    {
+      configAutoControl((Encoder) encoder, (Accelerometer)accelerometer);
     }
   }
 
@@ -101,14 +117,18 @@ public class MotorControlDevice extends AbstractDevice implements MotorControl
 
       // Velocity value is adjusted to motor limits
       // Return percent value (0 is still zero)
-      if( v != 0)
+      if (useVelocityLimits && v != 0)
       {
-        if(v > 0)
+        if (v > 0)
+        {
           v = (v - lowerLimit) / limitDiff;
+        }
         else
+        {
           v = (v + lowerLimit) / limitDiff;
+        }
       }
-      
+
       return v;
     }
     catch (PhidgetException ex)
@@ -118,21 +138,26 @@ public class MotorControlDevice extends AbstractDevice implements MotorControl
   }
 
   public void setVelocity(double v) throws RemoteException, DeviceException
-  {    
+  {
     // Adjust value to motor limits
     // 0 isn't adjusted because is the stop value
-    if(v != 0)
+    if (useVelocityLimits && v != 0)
     {
-      if(v > 0)
+      if (v > 0)
+      {
         v = (v * limitDiff) + lowerLimit;
+      }
       else
+      {
         v = (v * limitDiff) - lowerLimit;
+      }
     }
-    
+
     // Set velocity value   
     try
     {
       motor.setVelocity(index, v);
+      System.out.println("[MotorControlDevice.setVelocity]:motor control:"+v + " %, limits:"+useVelocityLimits);
     }
     catch (PhidgetException ex)
     {
@@ -195,6 +220,28 @@ public class MotorControlDevice extends AbstractDevice implements MotorControl
     setVelocity(0);
   }
 
+  public boolean isUsingVelocityLimits() throws RemoteException, DeviceException
+  {
+    return useVelocityLimits;
+  }
+
+  public void setUseVelocityLimits(boolean value) throws RemoteException, DeviceException
+  {
+    useVelocityLimits = value;
+    System.out.println("Using motorcontrol limits: "+useVelocityLimits);
+    // TODO Adjust velocity?
+  }
+
+  public double getLowerLimit() throws RemoteException, DeviceException
+  {
+    return lowerLimit;
+  }
+
+  public double getUpperLimit() throws RemoteException, DeviceException
+  {
+    return upperLimit;
+  }
+
   /**
    * Stops the motor and closes the Phidget device.
    * @throws DeviceException
@@ -213,23 +260,26 @@ public class MotorControlDevice extends AbstractDevice implements MotorControl
       throw new DeviceException(ex.getDescription());
     }
   }
-
   ///////////////////////////////
   // New Methods for Auto Velocity Control
   ///////////////////////////////
-
   private AutomaticControl autoControl;
 
-  // TODO Call this from Configurer
-  public void configAutoControl(Accelerometer accelerometer)
+  // Called from the constructor
+  private void configAutoControl(Encoder encoder, Accelerometer accelerometer)
   {
-    Filter filter = new EmptyFilter();
-    autoControl = new AutomaticControl(this, accelerometer, filter, 2000);
+    int periodo=20;
+    double freq=10.0;
+    double rc=1.0/(2*Math.PI*freq);
+    double alfa_lpf=(periodo/1000.0)/((periodo/1000.0)+rc);
+    System.out.println("Filtro LPF: Frq:"+ freq + "Hz, alfa: " +alfa_lpf);
+    Filter filter = new ExponentialFilter(alfa_lpf);
+    autoControl = new AutomaticControl(this, encoder, accelerometer, filter, periodo);
   }
 
   private void checkAutoControlConfigured() throws DeviceException
   {
-    if(autoControl == null)
+    if (autoControl == null)
     {
       throw new DeviceException("Automatic control not avalaible, configure it first");
     }
@@ -239,6 +289,13 @@ public class MotorControlDevice extends AbstractDevice implements MotorControl
   {
     checkAutoControlConfigured();
     autoControl.setEnabled(enabled);
+    System.out.println("[setAutoControlled]:"+enabled);
+    // if it's autocontrolled unable the power limits
+    if (enabled==true){
+      setUseVelocityLimits(false);
+    } else {
+      setUseVelocityLimits(true);
+    }
   }
 
   public boolean isAutoControlled() throws RemoteException, DeviceException
@@ -247,22 +304,67 @@ public class MotorControlDevice extends AbstractDevice implements MotorControl
     return autoControl.isEnabled();
   }
 
+  /**
+   *
+   * @param v: Objective speed
+   * @throws RemoteException
+   * @throws DeviceException
+   */
   public void setAutoControlVelocity(double v) throws RemoteException, DeviceException
   {
     checkAutoControlConfigured();
     autoControl.setAutoControlVelocity(v);
   }
 
+  /**
+   *
+   * @param v
+   */
+  public void  setDesiredOrder(double v){
+    autoControl.setDesiredOrder(v);
+  }
+
+  /**
+   * 
+   * @return
+   */
+  public boolean getEmergencyState(){return autoControl.getEnergencyState();}
+
+  /**
+   *
+   * @return Get Objective velocity in m/s
+   * @throws RemoteException
+   * @throws DeviceException
+   */
   public double getAutoControlVelocity() throws RemoteException, DeviceException
   {
     checkAutoControlConfigured();
     return autoControl.getAutoControlVelocity();
   }
 
-  public double getAutoControlVelocityCalc() throws RemoteException, DeviceException
+  /**
+   *
+   * @return
+   * @throws RemoteException
+   * @throws DeviceException
+   */
+  public double getAutoControlRawVelocity() throws RemoteException, DeviceException
   {
     checkAutoControlConfigured();
-    return autoControl.getVelocityFromAccel();
+    return autoControl.getVelocityRaw();
   }
 
+  public double getAutoControlFilteredVelocity() throws RemoteException, DeviceException
+  {
+    checkAutoControlConfigured();
+    return autoControl.getVelocityFiltered();
+  }
+
+  public void setHitAccelerationMaximum(double val){
+    autoControl.setHitAccelerationMaximum(val);
+  }
+
+  public double getHitAccelerationMaximum(){
+    return autoControl.getHitAccelerationMaximum();
+  }
 }

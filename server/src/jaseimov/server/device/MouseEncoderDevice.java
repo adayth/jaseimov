@@ -88,6 +88,7 @@ public class MouseEncoderDevice extends AbstractDevice implements Encoder
   }
   private MouseCapturer mouse;
   private double cmPerTic;
+  private double radPerTic;
   private MouseAxis axis;
   // This variable acomulates tics of the encoder and can be used by more of one Thread
   private volatile int tics;
@@ -103,9 +104,9 @@ public class MouseEncoderDevice extends AbstractDevice implements Encoder
    * @param mouseAxis The axis of the mouse with the encoder.
    * @throws DeviceException If the file is not found.
    */
-  public MouseEncoderDevice(String name, String file, double wheelRadius, int ticsPerTurn, MouseAxis mouseAxis) throws DeviceException
+  public MouseEncoderDevice(String name, String file, double wheelRadius, double ticsPerTurn, MouseAxis mouseAxis) throws DeviceException
   {
-    super(name, DeviceType.ENCODER_SENSOR);
+    super(name, DeviceType.MOUSE_ENCODER_SENSOR);
 
     mouse = new MouseCapturer(file);
 
@@ -119,9 +120,13 @@ public class MouseEncoderDevice extends AbstractDevice implements Encoder
     {
       throw new DeviceException(ex.getMessage());
     }
+    
+    // tics * radPerTic = radians
+    radPerTic = (2 * Math.PI) / ticsPerTurn;
 
     // tics * cmPerTic = distance
-    cmPerTic = wheelRadius * (360. / (double) ticsPerTurn) * ((2 * Math.PI) / 360.);
+    cmPerTic = wheelRadius * radPerTic;
+
     // Mouse axis
     axis = mouseAxis;
   }
@@ -134,9 +139,16 @@ public class MouseEncoderDevice extends AbstractDevice implements Encoder
     return saveTics;
   }
 
+  
+
   public double getCmPerTic() throws RemoteException
   {
     return cmPerTic;
+  }
+
+  public double getRadPerTic() throws RemoteException, DeviceException
+  {
+    return radPerTic;
   }
 
   public Object update() throws RemoteException, DeviceException

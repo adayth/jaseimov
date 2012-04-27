@@ -98,6 +98,21 @@ public interface MotorControl extends ControlDevice
    */
   void stopMotor() throws RemoteException, DeviceException;
 
+  /**
+   * Returns if motor velocity limits are enabled.
+   * @return
+   * @throws RemoteException
+   * @throws DeviceException
+   */
+  boolean isUsingVelocityLimits() throws RemoteException, DeviceException;
+
+  /**
+   * Enables motor velocity limits to get/set Velocity functions.
+   * @param value
+   * @throws RemoteException
+   * @throws DeviceException
+   */
+  void setUseVelocityLimits(boolean value) throws RemoteException, DeviceException;
 
   ///////////////////////////////
   // New Methods for Auto Velocity Control
@@ -109,8 +124,21 @@ public interface MotorControl extends ControlDevice
   void setAutoControlVelocity(double v) throws RemoteException, DeviceException;
   double getAutoControlVelocity() throws RemoteException, DeviceException;
 
-  double getAutoControlVelocityCalc() throws RemoteException, DeviceException;
+  double getAutoControlRawVelocity() throws RemoteException, DeviceException;
 
+  double getAutoControlFilteredVelocity() throws RemoteException, DeviceException;
+
+  double getLowerLimit() throws RemoteException, DeviceException;
+
+  double getUpperLimit() throws RemoteException, DeviceException;
+
+  public void  setDesiredOrder(double v)throws RemoteException, DeviceException;
+
+  public boolean getEmergencyState()throws RemoteException, DeviceException;
+
+  public void setHitAccelerationMaximum(double val)throws RemoteException, DeviceException;
+
+  public double getHitAccelerationMaximum()throws RemoteException, DeviceException;
   //double getAutoControlFrequency() throws RemoteException, DeviceException;
   //void setAutoControlFrequency(double frequency) throws RemoteException, DeviceException;
 }

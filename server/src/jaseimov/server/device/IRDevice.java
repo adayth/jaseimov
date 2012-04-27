@@ -19,6 +19,7 @@
 package jaseimov.server.device;
 
 import jaseimov.lib.devices.AbstractDevice;
+import jaseimov.lib.devices.Device;
 import jaseimov.lib.devices.DeviceException;
 import jaseimov.lib.devices.DeviceType;
 import jaseimov.lib.devices.IR;
@@ -48,11 +49,11 @@ public abstract class IRDevice extends AbstractDevice implements IR
   InterfaceKit ikit;
   protected int sensorPort;
 
-  private IRDevice(String name, InterfaceKit ikit, int sensorPort)
+  private IRDevice(String name, Device ikit, int sensorPort)
   {
     super(name, DeviceType.IR_SENSOR);
 
-    this.ikit = ikit;
+    this.ikit = (InterfaceKit) ikit;
     this.sensorPort = sensorPort;
   }
 
@@ -80,7 +81,7 @@ public abstract class IRDevice extends AbstractDevice implements IR
    * @param type The type of the IR to be created.
    * @return A new IRDevice.
    */
-  public static IRDevice getIRDevice(String name, InterfaceKit ikit, int sensorPort, IRType type)
+  public static IRDevice getIRDevice(String name, Device ikit, int sensorPort, IRType type)
   {
     switch (type)
     {
@@ -99,7 +100,7 @@ public abstract class IRDevice extends AbstractDevice implements IR
     final private static int MAX_RANGE = 1000;
     final private static int MIN_RANGE = 73;
 
-    public IR1080(String name, InterfaceKit ikit, int sensorPort)
+    public IR1080(String name, Device ikit, int sensorPort)
     {
       super(name, ikit, sensorPort);
     }
@@ -131,7 +132,7 @@ public abstract class IRDevice extends AbstractDevice implements IR
     final private static int MAX_RANGE = 1000;
     final private static int MIN_RANGE = 76;
 
-    public IR20150(String name, InterfaceKit ikit, int sensorPort)
+    public IR20150(String name, Device ikit, int sensorPort)
     {
       super(name, ikit, sensorPort);
     }

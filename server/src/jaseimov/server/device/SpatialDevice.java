@@ -25,7 +25,12 @@ import jaseimov.lib.devices.Axis;
 import jaseimov.lib.devices.DeviceException;
 import jaseimov.lib.devices.DeviceType;
 import jaseimov.lib.devices.Spatial;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.Arrays;
 
 /**
  *
@@ -39,6 +44,11 @@ public class SpatialDevice extends AbstractDevice implements Spatial
   private SpatialPhidget spatial;
 
   public SpatialDevice(String name, int serial) throws DeviceException
+  {
+    this(name, serial, null);
+  }
+
+  public SpatialDevice(String name, int serial, String configFile) throws DeviceException
   {
     super(name, DeviceType.SPATIAL_SENSOR);
 
@@ -55,7 +65,51 @@ public class SpatialDevice extends AbstractDevice implements Spatial
     {
       throw new DeviceException(ex.getDescription());
     }
-  }  
+
+    // Calibrate compass with configFile it it's provided
+    if(configFile != null)
+    {
+      try
+      {
+        double values[] = calibrateWithFile(configFile);
+        // Pass values to calibration function
+        calibrateCompass(values);
+      }
+      catch(IOException ex)
+      {
+        throw new DeviceException(ex.getMessage());
+      }
+    }
+  }
+
+  /**
+   * Reads a file with one line with 13 double values separated by commas
+   * @param fileName
+   * @return Array with 13 double values
+   * @throws IOException
+   * @throws PhidgetException
+   */
+  private double[] calibrateWithFile(String fileName) throws IOException
+  {    
+    File file = new File(fileName);
+    BufferedReader in = new BufferedReader(new FileReader(file));          
+    String line = in.readLine();
+    String values[] = line.split(",");
+    if(values.length >= 13)
+    {
+      double v[] = new double[13];
+      for(int i=0; i<13; i++)
+      {
+        v[i] = Double.parseDouble(values[i]);
+      }
+      System.out.println("Compass calibration values readed from file " + fileName + " : " + Arrays.toString(v));
+      return v;
+    }
+    else
+    {
+      throw new IOException("Compass calibration file must have 13 double values separated by commas");
+    }
+  }
 
   public double[][] getSpatialValue() throws RemoteException, DeviceException
   {
@@ -119,6 +173,25 @@ public class SpatialDevice extends AbstractDevice implements Spatial
     catch (PhidgetException ex)
     {
       throw new DeviceException(ex.getDescription());
+    }
+  }
+
+  public void calibrateCompass(double[] values) throws RemoteException, DeviceException
+  {
+    if(values != null && values.length >= 13)
+    {
+      try
+      {
+        spatial.setCompassCorrectionParameters(values[0], values[1], values[2], values[3], values[4], values[5], values[6], values[7], values[8], values[9], values[10], values[11], values[12]);
+      }
+      catch (PhidgetException ex)
+      {        
+        throw new DeviceException(ex.getDescription());
+      }
+    }
+    else
+    {
+      throw new DeviceException("Compass calibration must be 13 double values array");
     }
   }
 

@@ -1,4 +1,4 @@
-package jaseimov.client.controlcarB.filter;
+package jaseimov.client.controlcarB.adaptative;
 
 import jaseimov.client.utils.FileFunctions;
 import info.monitorenter.gui.chart.Chart2D;
@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,19 +37,19 @@ public class Curves
   FileFunctions fl = new FileFunctions();
 
   //constructor
-  public Curves() throws UnsupportedEncodingException
+  public Curves() 
   {
     // initializes with the default curves
     OpenSampleCurves();
   }
   //constructor
 
-  public void OpenSampleCurves()
+  public final void OpenSampleCurves()
   {
 
     InputStream in = getClass().getResourceAsStream("acfw.curve");
     acfw = fl.convertStreamToVec(in);
-
+    
     in = getClass().getResourceAsStream("dcfw.curve");
     dcfw = fl.convertStreamToVec(in);
 
