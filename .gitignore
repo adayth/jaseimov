@@ -37,6 +37,3 @@ $RECYCLE.BIN/
 ##############################
 *.class
 
-/tests/nbproject/private/
-/tests/dist/
-/tests/build/
