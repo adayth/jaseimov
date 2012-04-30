@@ -162,14 +162,15 @@ public class MotorControlTest extends AbstractDevice implements MotorControl
 
   public void setAutoControlled(boolean enabled) throws RemoteException, DeviceException
   {
-    checkAutoControlConfigured();
-    autoControl.setEnabled(enabled);
+    if(enabled) {
+      checkAutoControlConfigured();
+      autoControl.setEnabled(enabled);
+    }
   }
 
   public boolean isAutoControlled() throws RemoteException, DeviceException
   {
-    checkAutoControlConfigured();
-    return autoControl.isEnabled();
+    return false;
   }
 
   public void setAutoControlVelocity(double v) throws RemoteException, DeviceException

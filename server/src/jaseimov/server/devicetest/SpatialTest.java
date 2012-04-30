@@ -79,7 +79,7 @@ public class SpatialTest extends AbstractDevice implements Spatial
 
   @Override
   public void closeDevice() throws DeviceException
-  {    
+  {
   }
 
   public void calibrateCompass(double[] values) throws RemoteException, DeviceException
@@ -97,7 +97,7 @@ public class SpatialTest extends AbstractDevice implements Spatial
 
     public AccelAxisDevice(int ax)
     {
-      super(SpatialTest.this.deviceName + " accel. " + Axis.AXIS_NAMES[ax], DeviceType.AXIS_SENSOR);
+      super(SpatialTest.this.deviceName + " a" + Axis.AXIS_NAMES[ax], DeviceType.AXIS_SENSOR);
       axis = ax;
       this.setDevicePosition(SpatialTest.this.devicePosition);
     }
@@ -168,7 +168,7 @@ public class SpatialTest extends AbstractDevice implements Spatial
 
     public CompassAxisDevice(int ax)
     {
-      super(SpatialTest.this.deviceName + " compass " + Axis.AXIS_NAMES[ax], DeviceType.AXIS_SENSOR);
+      super(SpatialTest.this.deviceName + " c" + Axis.AXIS_NAMES[ax], DeviceType.AXIS_SENSOR);
       axis = ax;
       this.setDevicePosition(SpatialTest.this.devicePosition);
     }
@@ -239,7 +239,7 @@ public class SpatialTest extends AbstractDevice implements Spatial
 
     public GyroAxisDevice(int ax)
     {
-      super(SpatialTest.this.deviceName + " gyro. " + Axis.AXIS_NAMES[ax], DeviceType.AXIS_SENSOR);
+      super(SpatialTest.this.deviceName + " g" + Axis.AXIS_NAMES[ax], DeviceType.AXIS_SENSOR);
       axis = ax;
       this.setDevicePosition(SpatialTest.this.devicePosition);
     }

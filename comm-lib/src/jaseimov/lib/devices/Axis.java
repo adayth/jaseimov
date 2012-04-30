@@ -13,7 +13,7 @@ public interface Axis extends SensorDevice
   final public static int Z_AXIS = 2;
 
   // Axis x,y,z names
-  final public static String[] AXIS_NAMES = {"X", "Y", "Z"};
+  final public static String[] AXIS_NAMES = {"x", "y", "z"};
 
   /**
    * Returns the sensor value for this axis.

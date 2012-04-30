@@ -90,9 +90,9 @@ public class SpatialDevice extends AbstractDevice implements Spatial
    * @throws PhidgetException
    */
   private double[] calibrateWithFile(String fileName) throws IOException
-  {    
+  {
     File file = new File(fileName);
-    BufferedReader in = new BufferedReader(new FileReader(file));          
+    BufferedReader in = new BufferedReader(new FileReader(file));
     String line = in.readLine();
     String values[] = line.split(",");
     if(values.length >= 13)
@@ -117,7 +117,7 @@ public class SpatialDevice extends AbstractDevice implements Spatial
     v[0] = getAcceleration();
     v[1] = getMagneticField();
     v[2] = getAngularRate();
-    return v;   
+    return v;
   }
 
   public Object update() throws RemoteException, DeviceException
@@ -153,7 +153,7 @@ public class SpatialDevice extends AbstractDevice implements Spatial
     }
     catch (PhidgetException ex)
     {
-      if(ex.getErrorNumber() == PhidgetException.EPHIDGET_UNKNOWNVAL)            
+      if(ex.getErrorNumber() == PhidgetException.EPHIDGET_UNKNOWNVAL)
         return new double[]{COMPASS_ERROR_VALUE, COMPASS_ERROR_VALUE, COMPASS_ERROR_VALUE};
       else
         throw new DeviceException(ex.getDescription());
@@ -185,7 +185,7 @@ public class SpatialDevice extends AbstractDevice implements Spatial
         spatial.setCompassCorrectionParameters(values[0], values[1], values[2], values[3], values[4], values[5], values[6], values[7], values[8], values[9], values[10], values[11], values[12]);
       }
       catch (PhidgetException ex)
-      {        
+      {
         throw new DeviceException(ex.getDescription());
       }
     }
@@ -220,7 +220,7 @@ public class SpatialDevice extends AbstractDevice implements Spatial
 
     public AccelAxisDevice(int ax)
     {
-      super(SpatialDevice.this.deviceName + " accel. " + Axis.AXIS_NAMES[ax], DeviceType.AXIS_SENSOR);
+      super(SpatialDevice.this.deviceName + " a" + Axis.AXIS_NAMES[ax], DeviceType.AXIS_SENSOR);
       axis = ax;
       this.setDevicePosition(SpatialDevice.this.devicePosition);
     }
@@ -300,7 +300,7 @@ public class SpatialDevice extends AbstractDevice implements Spatial
 
     public CompassAxisDevice(int ax)
     {
-      super(SpatialDevice.this.deviceName + " compass " + Axis.AXIS_NAMES[ax], DeviceType.AXIS_SENSOR);
+      super(SpatialDevice.this.deviceName + " c" + Axis.AXIS_NAMES[ax], DeviceType.AXIS_SENSOR);
       axis = ax;
       this.setDevicePosition(SpatialDevice.this.devicePosition);
     }
@@ -318,7 +318,7 @@ public class SpatialDevice extends AbstractDevice implements Spatial
       }
       catch (PhidgetException ex)
       {
-        if(ex.getErrorNumber() == PhidgetException.EPHIDGET_UNKNOWNVAL)        
+        if(ex.getErrorNumber() == PhidgetException.EPHIDGET_UNKNOWNVAL)
           return COMPASS_ERROR_VALUE;
         else
           throw new DeviceException(ex.getDescription());
@@ -383,7 +383,7 @@ public class SpatialDevice extends AbstractDevice implements Spatial
 
     public GyroAxisDevice(int ax)
     {
-      super(SpatialDevice.this.deviceName + " gyro. " + Axis.AXIS_NAMES[ax], DeviceType.AXIS_SENSOR);
+      super(SpatialDevice.this.deviceName + " g" + Axis.AXIS_NAMES[ax], DeviceType.AXIS_SENSOR);
       axis = ax;
       this.setDevicePosition(SpatialDevice.this.devicePosition);
     }

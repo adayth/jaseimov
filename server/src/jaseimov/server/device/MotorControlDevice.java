@@ -153,7 +153,7 @@ public class MotorControlDevice extends AbstractDevice implements MotorControl
       }
     }
 
-    // Set velocity value   
+    // Set velocity value
     try
     {
       motor.setVelocity(index, v);
@@ -287,21 +287,24 @@ public class MotorControlDevice extends AbstractDevice implements MotorControl
 
   public void setAutoControlled(boolean enabled) throws RemoteException, DeviceException
   {
-    checkAutoControlConfigured();
-    autoControl.setEnabled(enabled);
-    System.out.println("[setAutoControlled]:"+enabled);
-    // if it's autocontrolled unable the power limits
-    if (enabled==true){
-      setUseVelocityLimits(false);
-    } else {
-      setUseVelocityLimits(true);
+    // If disabling autocontrol and ther isn't autocontorl configured, no problem
+    if (autoControl == null && !enabled) {
+    }
+    else {
+      autoControl.setEnabled(enabled);
+      System.out.println("[setAutoControlled]:"+enabled);
+      // if it's autocontrolled unable the power limits
+      if (enabled==true){
+        setUseVelocityLimits(false);
+      } else {
+        setUseVelocityLimits(true);
+      }
     }
   }
 
   public boolean isAutoControlled() throws RemoteException, DeviceException
   {
-    checkAutoControlConfigured();
-    return autoControl.isEnabled();
+    return autoControl == null ? false : autoControl.isEnabled();
   }
 
   /**
@@ -325,7 +328,7 @@ public class MotorControlDevice extends AbstractDevice implements MotorControl
   }
 
   /**
-   * 
+   *
    * @return
    */
   public boolean getEmergencyState(){return autoControl.getEnergencyState();}

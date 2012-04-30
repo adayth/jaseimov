@@ -68,7 +68,7 @@ public class RemoteDeviceList
       String[] serviceInfo = list.getServiceList();
 
       deviceMap.clear();
-      
+
       if (serviceInfo.length > 0)
       {
         for (String s : serviceInfo)
@@ -102,12 +102,38 @@ public class RemoteDeviceList
 
   /**
    * Returns a {@link RemoteDeviceInfo} with the device ID provided.
-   * @param id Device ID of the device.
+   * @param id ID of the device.
    * @return A RemoteDeviceInfo object or null if a device with that id isn't found.
    */
   public RemoteDeviceInfo getRemoteDeviceInfo(int id)
   {
     return deviceMap.get(id);
+  }
+
+  /**
+   * Returns a {@link RemoteDeviceInfo} with the device name provided.
+   * @param name Name of the device.
+   * @return A RemoteDeviceInfo object or null if a device with that name isn't found.
+   */
+  public RemoteDeviceInfo getRemoteDeviceInfo(String name)
+  {
+    // Search for device
+    for (RemoteDeviceInfo value : deviceMap.values())
+    {
+      try
+      {
+        if (value.getDevice().getName().equals(name))
+        {
+          // device found
+          return value;
+        }
+      }
+      catch(Exception ignore)
+      {
+      }
+    }
+    // Not found
+    return null;
   }
 
   /**
