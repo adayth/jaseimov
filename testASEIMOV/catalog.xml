@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+    <system systemId="file:/home/felfo/sandbox/git/aseimov/testASEIMOV/src/jaseimov/scripts/xml/script_aseimov.xsd" uri="xml-resources/jaxb/script/script_aseimov.xsd"/>
+</catalog>

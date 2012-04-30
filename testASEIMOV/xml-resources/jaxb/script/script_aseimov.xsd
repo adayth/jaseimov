@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://cicei.ulpgc.es/aseimov/" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://cicei.ulpgc.es/aseimov/">
+
+
+
+
+
+  <xsd:element name="script">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="captures" minOccurs="0" maxOccurs="1">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="capture" maxOccurs="unbounded" minOccurs="0">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element name="delay"
+                                                                                     type="xsd:int">
+                    </xsd:element>
+                    <xsd:element name="devices">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element
+                            name="device" maxOccurs="unbounded" minOccurs="1">
+                            <xsd:complexType>
+                              <xsd:sequence>
+                                <xsd:element
+                                  name="id" type="xsd:string">
+                                </xsd:element>
+                              </xsd:sequence>
+                            </xsd:complexType>
+                          </xsd:element>
+                        </xsd:sequence>
+                      </xsd:complexType>
+                    </xsd:element>
+                  </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="orders">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="order"
+                                                             maxOccurs="unbounded" minOccurs="1">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element name="duration"
+                                                                                     type="xsd:int">
+                    </xsd:element>
+                    <xsd:element name="velocity"
+                                                                                     type="xsd:int">
+                    </xsd:element>
+                    <xsd:element name="direction"
+                                                                                     type="xsd:int">
+                    </xsd:element>
+                  </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+</xsd:schema>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<script xmlns="http://cicei.ulpgc.es/aseimov/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <captures>
+    <capture>
+      <delay>100</delay>
+      <devices>
+        <device>
+          <id>spatial-test ax</id>
+        </device>
+        <device>
+          <id>spatial-test ay</id>
+        </device>
+      </devices>
+    </capture>
+    <capture>
+      <delay>100</delay>
+      <devices>
+        <device>
+          <id>spatial-test gx</id>
+        </device>
+        <device>
+          <id>spatial-test gy</id>
+        </device>
+      </devices>
+    </capture>
+  </captures>
+  <orders>
+    <order>
+      <duration>1000</duration>
+      <velocity>100</velocity>
+      <direction>30</direction>
+    </order>
+    <order>
+      <duration>2000</duration>
+      <velocity>50</velocity>
+      <direction>-30</direction>
+    </order>
+  </orders>
+</script>

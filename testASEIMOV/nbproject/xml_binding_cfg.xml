@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<schemas xmlns='http://xml.netbeans.org/schema/JAXBWizConfig' destdir='build/generated-sources/jaxb' projectName='testASEIMOV' version='1.0'>
+	<schema type='-xmlschema' package='jaseimov.scripts.xml.bindings' name='script'>
+		<xjc-options>
+		</xjc-options>
+		<schema-sources>
+			<schema-source location='xml-resources/jaxb/script/script_aseimov.xsd' origLocation='src/jaseimov/scripts/xml/script_aseimov.xsd'/>
+		</schema-sources>
+		<bindings>
+		</bindings>
+		<catalog/>
+	</schema>
+</schemas>

@@ -19,46 +19,30 @@
 
 package jaseimov.scripts;
 
-import jaseimov.lib.devices.MotorControl;
-import jaseimov.lib.devices.ServoControl;
+import jaseimov.scripts.xml.bindings.Script.Orders.Order;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ScriptRunner
 {
-
-  // Devices
-  private MotorControl motor;
-  private ServoControl servo;
-
   // List of script orders
-  private List<ScriptOrder> orderList = new ArrayList<ScriptOrder>();
+  private List<Order> orderList = new ArrayList<Order>();
   // Current order index
   private int orderIndex;
 
-  public void setMotor(MotorControl motor)
-  {
-    this.motor = motor;
-  }
-
-  public void setServo(ServoControl servo)
-  {
-    this.servo = servo;
-  }
-
-  public void setOrders(List<ScriptOrder> orders)
+  public void setOrders(List<Order> orders)
   {
     orderList = orders;
     resetScript();
-  }  
+  }
 
   public boolean isScriptEnded()
   {
     return orderList.size() == orderIndex;
-  }  
+  }
 
-  public ScriptOrder getNextOrder()
-  {    
+  public Order getNextOrder()
+  {
     return orderList.get(orderIndex++);
   }
 
@@ -70,5 +54,5 @@ public class ScriptRunner
   public int getNumOrders()
   {
     return orderList.size();
-  }  
+  }
 }

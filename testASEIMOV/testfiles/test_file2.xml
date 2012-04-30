@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<script xmlns="http://cicei.ulpgc.es/aseimov/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <!--captures>
+    <capture>
+      <delay>0</delay>
+      <devices>
+        <device>
+          <id>myid1delay0</id>
+        </device>
+        <device>
+          <id>myid2delay0</id>
+        </device>
+      </devices>
+    </capture>
+    <capture>
+      <delay>1</delay>
+      <devices>
+        <device>
+          <id>myid1delay1</id>
+        </device>
+        <device>
+          <id>myid2delay1</id>
+        </device>
+      </devices>
+    </capture>
+  </captures-->
+  <orders>
+    <order>
+      <duration>0</duration>
+      <velocity>0</velocity>
+      <direction>0</direction>
+    </order>
+    <order>
+      <duration>1</duration>
+      <velocity>1</velocity>
+      <direction>1</direction>
+    </order>
+  </orders>
+</script>
