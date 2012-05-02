@@ -37,7 +37,8 @@ import org.xml.sax.SAXParseException;
 public class ScriptXMLUtil
 {
   // XML schema file location
-  public final static String XML_SCHEMA = "xml-resources/jaxb/script/script_aseimov.xsd";
+  //public final static String XML_SCHEMA = "xml-resources/jaxb/script/script_aseimov.xsd";
+  public final static String XML_SCHEMA = "script_aseimov.xsd";
 
   public static Script parseXMLScript(String filename) throws JAXBException
   {
@@ -62,8 +63,8 @@ public class ScriptXMLUtil
     JAXBSource source = new JAXBSource(jaxbContext, script);
 
     SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-    //Schema schema = sf.newSchema(ScriptUtil.class.getResource(XML_SCHEMA));
-    Schema schema = sf.newSchema(new File(XML_SCHEMA));
+    Schema schema = sf.newSchema(ScriptXMLUtil.class.getResource(XML_SCHEMA));
+    //Schema schema = sf.newSchema(new File(XML_SCHEMA));
 
     Validator validator = schema.newValidator();
     // Validator to grab exception message
