@@ -31,7 +31,11 @@ import jaseimov.scripts.xml.bindings.Script.Captures.Capture;
 import jaseimov.scripts.xml.bindings.Script.Captures.Capture.Devices.Device;
 import jaseimov.scripts.xml.bindings.Script.Orders.Order;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.rmi.RemoteException;
+import java.security.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -220,8 +224,8 @@ public class CaptureScript
 
     class CaptureThread extends Thread
     {
-     long sleepTime;
-     List<SensorDevice> sensors;
+      long sleepTime;
+      List<SensorDevice> sensors;
 
       volatile boolean run = true;
       List<List<Long>> timestamps = new ArrayList<List<Long>>();
@@ -408,27 +412,29 @@ public class CaptureScript
       }
     }
 
-    /*System.out.println("Creating capture file: " + CAPTURE_FILE);
+    CAPTURE_FILE = new File(CAPTURE_PATH);
+    System.out.println("Creating capture file: " + CAPTURE_FILE);
     try
     {
       // Open file
-      CAPTURE_FILE = new File(CAPTURE_PATH);
-      OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(CAPTURE_FILE));
+      OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(CAPTURE_FILE), Charset.forName("UTF-8"));
 
       // Headers
-      writer.write("Timestamp, ax, ay, az");
-      writer.write("\n");
+      writer.write("Timestamp, Sensor, Value\n");
 
       // Captured values
-      for(int i=0; i<TIMESTAMP_LIST.size(); i++)
+      for(CaptureThread captureThread : captureThreads)
       {
-        long timestamp = TIMESTAMP_LIST.get(i);
-        double a[] = ACCELERATION_LIST.get(i);
-        double ax = a[0];
-        double ay = a[1];
-        double az = a[2];
-        writer.write(timestamp + ", " + ax + ", " + ay + ", " + az);
-        writer.write("\n");
+        for(int i=0; i<captureThread.sensors.size(); i++)
+        {
+          String name = captureThread.sensors.get(i).getName();
+          for(int j=0; j<captureThread.timestamps.get(i).size(); j++)
+          {
+            Long timestamp = captureThread.timestamps.get(i).get(j);
+            Object value = captureThread.values.get(i).get(j);
+            writer.write(String.format("%s, %s, %s\n", timestamp, name, value));
+          }
+        }
       }
 
       writer.flush();
@@ -440,7 +446,7 @@ public class CaptureScript
     {
       System.err.println("Unable to write captured values, error: " + ex);
       System.exit(1);
-    }*/
+    }
 
     ///////////////////////////////////
     // Close app
