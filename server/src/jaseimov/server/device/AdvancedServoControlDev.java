@@ -57,13 +57,13 @@ public class AdvancedServoControlDev extends AbstractDevice implements AdvancedS
       servo.waitForAttachment(DeviceConstants.PHIDGET_WAIT);
       servo.setServoType(index, servoType);
       servo.setEngaged(index, true);
-      servo.setPosition(index, startPosition);      
+      servo.setPosition(index, startPosition);
     }
     catch (PhidgetException ex)
     {
       throw new DeviceException(ex.getDescription());
     }
-  }  
+  }
 
   public double getPosition() throws RemoteException, DeviceException
   {
@@ -136,7 +136,7 @@ public class AdvancedServoControlDev extends AbstractDevice implements AdvancedS
 
   public void resetPosition() throws RemoteException, DeviceException
   {
-    setPosition(startPosition);
+    setPosition(getStartPosition());
   }
 
   /**
